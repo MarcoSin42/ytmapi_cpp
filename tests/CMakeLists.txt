@@ -22,7 +22,7 @@ function(new_test name)
   file(RELATIVE_PATH dir ${EXAMPLES_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
   set_property(GLOBAL APPEND PROPERTY YTMAPI::TEST ${dir}/${name})
   target_compile_features(ytmapi_test_${name} PRIVATE cxx_std_20)
-endfunction(example)
+endfunction(new_test)
 
 
 new_test(playlists)
