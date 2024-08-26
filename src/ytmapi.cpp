@@ -143,7 +143,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
         r_json = json::parse(r.text);
         
         for (json &entry : r_json["items"]) {
-            output.push_back(myints
+            output.push_back(
                 Track{
                     entry["contentDetails"]["videoId"],
                     entry["snippet"]["title"],
