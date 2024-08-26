@@ -34,11 +34,8 @@ class YTMusicBase {
     
     public:
         YTMusicBase(string oauth_path, string lang = "en");
-        Tracks getPlaylistTracks(string playlistID, int limit, bool related, int suggestions_limit);
-        Playlists getPlaylists();
-
-        string getOauth();
-    
+        Tracks getPlaylistTracks(string playlistID);
+        Playlists getPlaylists();    
     
 };
 

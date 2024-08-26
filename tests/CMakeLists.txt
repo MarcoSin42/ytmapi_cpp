@@ -26,3 +26,4 @@ endfunction(new_test)
 
 
 new_test(playlists)
+new_test(getPlaylistTracks)

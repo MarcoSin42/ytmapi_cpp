@@ -1,5 +1,8 @@
+#include <cstdio>
+#include <cstring>
 #include <exception>
 #include <format>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <fstream>
@@ -21,14 +24,16 @@ using std::string, std::format;
 using json = nlohmann::json;
 
 YTMusicBase::YTMusicBase(string oauth_path, string lang) {
+    std::ifstream oauth_file;
     try {
-        std::ifstream oauth_file(oauth_path);
+        oauth_file = std::ifstream(oauth_path);
     } catch (std::ifstream::failure const&) {
         throw std::runtime_error("Unable to open the oauth json file");
     }
 
     try {
-        json oath_json = json::parse(oauth_path);
+        json oath_json = json::parse(oauth_file);
+
         m_oauthToken = oath_json.at("access_token");
         m_refreshToken = oath_json.at("refresh_token");
     } catch (std::exception const&) {
@@ -66,13 +71,33 @@ Playlists YTMusicBase::getPlaylists() {
     return output;
 }
 
+bool inline keyExists(json a_json, string key) {
+    try {
+        a_json.at(key);
+        return true;
+    } catch (std::exception const&) {
+        return false;
+    }
+}
 
+string inline trimTopicSuffix(string s) {
+    int startPosRm = s.find(" - Topic");
+    if (startPosRm < 0)
+        return s;
+
+    return s.erase(startPosRm, strlen(" - Topic"));
+}
+
+
+// This uses the publicly available YouTube Data API
 Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
     Tracks output;
+    string contToken = "";
+    json r_json;
     output.reserve(50);
 
     cpr::Response r = cpr::Get(
-        cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems?"},
+        cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems"},
         cpr::Bearer{m_oauthToken},
         cpr::Header{{"Accept", "application/json"}},
         cpr::Parameters{
@@ -82,7 +107,54 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
             {"playlistId", playlistID}
         }
     );
+    std::cout << r.text << "\n"; 
+    r_json = json::parse(r.text);
 
+
+
+    for (json &entry : r_json["items"]) {
+        output.push_back(
+            Track{
+                entry["contentDetails"]["videoId"],
+                entry["snippet"]["title"],
+                trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
+                "placeholer",
+                0,
+                0
+            }
+        );
+    }
+    
+    while (keyExists(r_json, "nextPageToken")) {
+        contToken = r_json["nextPageToken"];
+
+        cpr::Response r = cpr::Get(
+            cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems"},
+            cpr::Bearer{m_oauthToken},
+            cpr::Header{{"Accept", "application/json"}},
+            cpr::Parameters{
+                {"part", "contentDetails"},
+                {"part", "snippet"},
+                {"maxResults", "50"},
+                {"playlistId", playlistID},
+                {"pageToken", contToken},
+            }
+        );
+        r_json = json::parse(r.text);
+        
+        for (json &entry : r_json["items"]) {
+            output.push_back(myints
+                Track{
+                    entry["contentDetails"]["videoId"],
+                    entry["snippet"]["title"],
+                    trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
+                    "placeholer",
+                    0,
+                    0
+                }
+            );
+        }
+    }
 
     return output;
 }
