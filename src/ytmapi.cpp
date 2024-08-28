@@ -11,14 +11,9 @@
 
 #include <nlohmann/json.hpp>
 
+#include "utils.hpp"
 #include "ytmapi.hpp"
 
-#include "cpr/api.h"
-#include "cpr/bearer.h"
-#include "cpr/body.h"
-#include "cpr/cprtypes.h"
-#include "cpr/parameters.h"
-#include "cpr/response.h"
 
 using std::string, std::format;
 using json = nlohmann::json;
@@ -71,22 +66,6 @@ Playlists YTMusicBase::getPlaylists() {
     return output;
 }
 
-bool inline keyExists(json a_json, string key) {
-    try {
-        a_json.at(key);
-        return true;
-    } catch (std::exception const&) {
-        return false;
-    }
-}
-
-string inline trimTopicSuffix(string s) {
-    int startPosRm = s.find(" - Topic");
-    if (startPosRm < 0)
-        return s;
-
-    return s.erase(startPosRm, strlen(" - Topic"));
-}
 
 
 // This uses the publicly available YouTube Data API
@@ -117,7 +96,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
             Track{
                 entry["contentDetails"]["videoId"],
                 entry["snippet"]["title"],
-                trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
+                ytmapi_utils::trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
                 "placeholer",
                 0,
                 0
@@ -125,7 +104,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
         );
     }
     
-    while (keyExists(r_json, "nextPageToken")) {
+    while (ytmapi_utils::keyExists(r_json, "nextPageToken")) {
         contToken = r_json["nextPageToken"];
 
         cpr::Response r = cpr::Get(
@@ -147,7 +126,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
                 Track{
                     entry["contentDetails"]["videoId"],
                     entry["snippet"]["title"],
-                    trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
+                    ytmapi_utils::trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
                     "placeholer",
                     0,
                     0

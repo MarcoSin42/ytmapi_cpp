@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "utils.hpp"
+
 using std::string;
 
 struct Playlist {
