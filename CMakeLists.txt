@@ -1,5 +1,4 @@
 cmake_minimum_required (VERSION 3.24)
-include(GNUInstallDirs)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-narrowing")
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "$-g")
@@ -44,22 +43,22 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 # Dependencies ^
-
+include(GNUInstallDirs)
 
 add_library(ytmapi
   STATIC
   src/ytmapi.cpp
 )
 
+target_link_libraries(ytmapi 
+  PUBLIC cpr::cpr 
+  PUBLIC nlohmann_json::nlohmann_json
+)
+
 target_include_directories(ytmapi
   PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
   "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
-)
-
-target_link_libraries(ytmapi 
-  PUBLIC cpr::cpr 
-  PUBLIC nlohmann_json::nlohmann_json
 )
 
 install(TARGETS ytmapi cpr nlohmann_json
@@ -78,27 +77,25 @@ install(EXPORT ytmapiTargets
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ytmapi
 )
 
+include(CMakePackageConfigHelpers)
 
-set(version 0.1.0)
-
-set_property(TARGET ytmapi PROPERTY VERSION ${version})
-set_property(TARGET ytmapi PROPERTY SOVERSION 3)
-set_property(TARGET ytmapi PROPERTY
-  INTERFACE_ytmapi_MAJOR_VERSION 3)
-set_property(TARGET ytmapi APPEND PROPERTY
-  COMPATIBLE_INTERFACE_STRING ytmapi_MAJOR_VERSION
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
+  "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ytmapi
 )
 
-# generate the version file for the config file
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfigVersion.cmake"
-  VERSION "${version}"
-  COMPATIBILITY AnyNewerVersion
+install(FILES
+          "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfig.cmake"
+          "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfigVersion.cmake"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ytmapi
 )
 
 
+export(EXPORT ytmapiTargets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/ytmapiTargets.cmake"
+       NAMESPACE ytmapi::
+)
 
-include(ytmapi_export.cmake)
 add_subdirectory(tests)
 
 
