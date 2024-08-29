@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <iostream>
-#include "ytmapi.hpp"
+#include "include/ytmapi.hpp"
 
-
+using namespace ytmapi;
 int main() {
     // Note: in order to run this example an oauth json must be within the same directory
     YTMusicBase test("oauth.json");

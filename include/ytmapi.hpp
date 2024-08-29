@@ -7,6 +7,8 @@
 
 using std::string;
 
+namespace ytmapi {
+
 struct Playlist {
     string title;
     string id;
@@ -40,5 +42,5 @@ class YTMusicBase {
         Playlists getPlaylists();    
     
 };
-
+};
 #endif

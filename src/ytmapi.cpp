@@ -1,21 +1,19 @@
 #include <cstring>
-#include <exception>
 #include <format>
-#include <iostream>
-#include <stdexcept>
 #include <string>
-#include <fstream>
 
 #include <cpr/cpr.h>
 
 #include <nlohmann/json.hpp>
 
-#include "utils.hpp"
-#include "ytmapi.hpp"
+#include "include/utils.hpp"
+#include "include/ytmapi.hpp"
 
 
 using std::string, std::format;
 using json = nlohmann::json;
+
+namespace ytmapi {
 
 YTMusicBase::YTMusicBase(string oauth_path, string lang) {
     std::ifstream oauth_file;
@@ -137,4 +135,4 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
     return output;
 }
 
-
+}; // namespace ytmapi

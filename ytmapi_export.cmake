@@ -1,5 +1,4 @@
-export(
-  TARGETS ytmapi cpr nlohmann_json
-  NAMESPACE ytmapi::
-  FILE "${PROJECT_BINARY_DIR}/ytmapi-targets.cmake"
+export(EXPORT ytmapiTargets 
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/ytmapiTargets.cmake"
+       NAMESPACE ytmapi::
 )
