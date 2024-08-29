@@ -16,7 +16,6 @@ option(YTMAPI_TESTS "Set to ON to build tests" OFF)
 # ^^^^ OPTIONS ^^^^^^^
 project(ytmpapi
   LANGUAGES CXX
-  VERSION 0.1.0
   DESCRIPTION "A CPP port of the similarly named Python library"
 )
 
@@ -88,6 +87,24 @@ install(FILES
           "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfig.cmake"
           "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ytmapi
+)
+
+
+set(version 0.1.0)
+
+set_property(TARGET ytmapi PROPERTY VERSION ${version})
+set_property(TARGET ytmapi PROPERTY SOVERSION 3)
+set_property(TARGET ytmapi PROPERTY
+  INTERFACE_ytmapi_MAJOR_VERSION 3)
+set_property(TARGET ytmapi APPEND PROPERTY
+  COMPATIBLE_INTERFACE_STRING ytmapi_MAJOR_VERSION
+)
+
+# generate the version file for the config file
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfigVersion.cmake"
+  VERSION "${version}"
+  COMPATIBILITY AnyNewerVersion
 )
 
 
