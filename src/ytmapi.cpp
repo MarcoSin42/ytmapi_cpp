@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <format>
@@ -86,7 +85,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
             {"playlistId", playlistID}
         }
     );
-    std::cout << r.text << "\n"; 
+    //std::cout << r.text << "\n"; 
     r_json = json::parse(r.text);
 
 
