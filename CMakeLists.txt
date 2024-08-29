@@ -47,8 +47,6 @@ FetchContent_MakeAvailable(json)
 
 add_library(ytmapi
   STATIC
-  include/ytmapi.hpp
-  include/utils.hpp
   src/ytmapi.cpp
 )
 
