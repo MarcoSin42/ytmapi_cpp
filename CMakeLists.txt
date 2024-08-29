@@ -1,4 +1,5 @@
 cmake_minimum_required (VERSION 3.24)
+include(GNUInstallDirs)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-narrowing")
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "$-g")
@@ -76,6 +77,25 @@ install(EXPORT ytmapiTargets
         NAMESPACE ytmapi::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ytmapi
 )
+
+
+set(version 0.1.0)
+
+set_property(TARGET ytmapi PROPERTY VERSION ${version})
+set_property(TARGET ytmapi PROPERTY SOVERSION 3)
+set_property(TARGET ytmapi PROPERTY
+  INTERFACE_ytmapi_MAJOR_VERSION 3)
+set_property(TARGET ytmapi APPEND PROPERTY
+  COMPATIBLE_INTERFACE_STRING ytmapi_MAJOR_VERSION
+)
+
+# generate the version file for the config file
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/ytmapiConfigVersion.cmake"
+  VERSION "${version}"
+  COMPATIBILITY AnyNewerVersion
+)
+
 
 
 include(ytmapi_export.cmake)
