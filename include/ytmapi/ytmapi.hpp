@@ -22,6 +22,7 @@ struct Track {
     int secs;
 };
 
+string extractJSONstr(string s);
 
 using Playlists = std::vector<Playlist>;
 using Tracks = std::vector<Track>;
@@ -37,6 +38,7 @@ class YTMusicBase {
     public:
         YTMusicBase(string oauth_path, string lang = "en");
         Tracks getPlaylistTracks(string playlistID);
+        Tracks getPlaylistTracksPAPI(string playlistID);
         Playlists getPlaylists();    
     
 };

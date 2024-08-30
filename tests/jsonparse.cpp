@@ -1,5 +1,4 @@
-#include <boost/regex/v5/regex.hpp>
-#include <boost/regex/v5/regex_fwd.hpp>
+#include "ytmapi.hpp"
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -7,10 +6,9 @@
 #include <nlohmann/json.hpp>
 #include <boost/regex.hpp>
 
+
 using json = nlohmann::json;
 using std::string;
-
-
 
 
 int main() {
@@ -20,7 +18,7 @@ int main() {
     buf << html_file.rdbuf();
     std::string pout_text = buf.str();
 
-    std::string raw = extractJSONstr(pout_text);
+    std::string raw = ytmapi::extractJSONstr(pout_text);
 
     // std::string raw = R"~(\x7b "test": "abc" \x7d)~";
     

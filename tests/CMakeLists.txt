@@ -12,8 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 function(new_test name)
   add_executable(ytmapi_test_${name} ${name}.cpp)
   target_include_directories(ytmapi_test_${name} 
-    PRIVATE ../include
-    PRIVATE ../src
+    PRIVATE ../include/ytmapi
+    PRIVATE ../src/ytmapi
   )
   
   target_link_libraries(ytmapi_test_${name}
@@ -27,3 +27,4 @@ endfunction(new_test)
 
 new_test(playlists)
 new_test(getPlaylistTracks)
+new_test(jsonparse)

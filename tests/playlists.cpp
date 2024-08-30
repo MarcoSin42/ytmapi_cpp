@@ -1,5 +1,5 @@
 #include <cstdio>
-#include "include/ytmapi.hpp"
+#include "ytmapi/ytmapi.hpp"
 
 using namespace ytmapi;
 

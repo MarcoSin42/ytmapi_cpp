@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.24)
 
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-narrowing")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-narrowing -g")
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "$-g")
 
 
@@ -10,12 +10,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ---- OPTIONS ------
-option(YTMAPI_TESTS "Set to ON to build tests" OFF)
+option(YTMAPI_TESTS "Set to ON to build tests" ON)
 
 
 # Dependencies
 include(FetchContent)
-set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+set(FETCHCONTENT_UPDATES_DISCONNECTED OFF)
 set(FETCHCONTENT_QUIET ON)
 
 FetchContent_Declare(cpr 
@@ -66,7 +66,7 @@ target_link_libraries(ytmapi
 )
 
 include(cmake/ytmapi_export.cmake)
-
+add_subdirectory(tests)
 
 
 
