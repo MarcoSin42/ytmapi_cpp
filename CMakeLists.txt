@@ -13,17 +13,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(YTMAPI_TESTS "Set to ON to build tests" OFF)
 
 
-# ^^^^ OPTIONS ^^^^^^^
-project(YTMApi_cpp
-  LANGUAGES CXX
-  VERSION 1.0.0
-  DESCRIPTION "A CPP port of the similarly named Python library"
-)
-
-
 # Dependencies
 include(FetchContent)
-
 set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set(FETCHCONTENT_QUIET ON)
 
@@ -44,26 +35,38 @@ FetchContent_Declare(json
 FetchContent_MakeAvailable(json)
 # Dependencies ^
 
-
+project(ytmpapi
+  LANGUAGES CXX
+  DESCRIPTION "A CPP port of the similarly named Python library"
+)
 add_library(ytmapi
-  include/ytmapi.hpp
-  include/utils.hpp
-  src/ytmapi.cpp
+  STATIC
+  src/ytmapi/ytmapi.cpp
 )
 
 target_include_directories(ytmapi
-  PRIVATE include
-  PRIVATE src
+  PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  PRIVATE
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
 )
+
+install(
+  TARGETS ytmapi cpr nlohmann_json
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
 
 target_link_libraries(ytmapi 
   PUBLIC cpr::cpr 
   PUBLIC nlohmann_json::nlohmann_json
 )
 
+include(cmake/ytmapi_export.cmake)
 
 
-include(ytmapi_export.cmake)
-add_subdirectory(tests)
 
 

@@ -1,22 +1,19 @@
-#include <cstdio>
 #include <cstring>
-#include <exception>
 #include <format>
-#include <iostream>
-#include <stdexcept>
 #include <string>
-#include <fstream>
 
 #include <cpr/cpr.h>
 
 #include <nlohmann/json.hpp>
 
-#include "utils.hpp"
-#include "ytmapi.hpp"
+#include "ytmapi/ytmapi.hpp"
+#include "ytmapi/utils.hpp"
 
 
 using std::string, std::format;
 using json = nlohmann::json;
+
+namespace ytmapi {
 
 YTMusicBase::YTMusicBase(string oauth_path, string lang) {
     std::ifstream oauth_file;
@@ -69,6 +66,10 @@ Playlists YTMusicBase::getPlaylists() {
 
 
 // This uses the publicly available YouTube Data API
+/**
+This has the following limitations:
+    - This does not provide the album data
+ */
 Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
     Tracks output;
     string contToken = "";
@@ -86,10 +87,8 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
             {"playlistId", playlistID}
         }
     );
-    std::cout << r.text << "\n"; 
+    //std::cout << r.text << "\n"; 
     r_json = json::parse(r.text);
-
-
 
     for (json &entry : r_json["items"]) {
         output.push_back(
@@ -138,4 +137,4 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
     return output;
 }
 
-
+}; // namespace ytmapi

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "utils.hpp"
-
 using std::string;
+
+namespace ytmapi {
 
 struct Playlist {
     string title;
@@ -40,5 +40,5 @@ class YTMusicBase {
         Playlists getPlaylists();    
     
 };
-
+};
 #endif
