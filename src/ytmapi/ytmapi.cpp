@@ -213,7 +213,6 @@ Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
         flexColumns.reset();
         album  = getmRLIFRText(flexColumns.at(albumIdx)); 
         
-        //view = listItemRenderer["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
         view = listItemRenderer.at_path(".fixedColumns[0].musicResponsiveListItemFixedColumnRenderer.text.runs[0].text");
         duration_str = string(view.begin(), view.end()); 
         int mins = std::stoi(duration_str.substr(0, duration_str.find(":")));
