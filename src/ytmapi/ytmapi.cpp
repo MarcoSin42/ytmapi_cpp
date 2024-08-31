@@ -80,12 +80,25 @@ Playlists YTMusicBase::getPlaylists() {
         cpr::Body{R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240819.01.00"}}})~"}
     );
 
-    json r_json = json::parse(r.text)["items"][1]["guideSectionRenderer"]["items"];
+    simdjson::ondemand::parser parser;
+    simdjson::padded_string pad_string = simdjson::padded_string(r.text);
+    simdjson::ondemand::document doc = parser.iterate(pad_string);
 
-    for (json &entry : r_json) {
+    simdjson::ondemand::array playlistEntries = doc.at_path(".items[1].guideSectionRenderer.items").get_array();
+    std::string_view view;
+    string playlistID, title;
+    for (simdjson::ondemand::object entry: playlistEntries) {
+        simdjson::ondemand::object guideEntry = entry["guideEntryRenderer"];
+
+        view = guideEntry.at_path(".formattedTitle.runs[0].text");
+        title = string(view.begin(), view.end());
+
+        view = guideEntry["entryData"]["guideEntryData"]["guideEntryId"];
+        playlistID = string(view.begin(), view.end());
+
         output.push_back(Playlist{
-            entry["guideEntryRenderer"]["formattedTitle"]["runs"][0]["text"],
-            entry["guideEntryRenderer"]["entryData"]["guideEntryData"]["guideEntryId"]
+            title,
+            playlistID
         });
     }
 
