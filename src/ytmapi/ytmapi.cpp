@@ -46,6 +46,13 @@ string extractJSONstr(string s) {
 
 YTMusicBase::YTMusicBase(string oauth_path, string lang) {
     std::ifstream oauth_file;
+
+    simdjson::ondemand::parser parser;
+    simdjson::padded_string pad_string;
+    simdjson::ondemand::document doc;
+
+    std::string_view view;
+
     try {
         oauth_file = std::ifstream(oauth_path);
     } catch (std::ifstream::failure const&) {
@@ -53,10 +60,16 @@ YTMusicBase::YTMusicBase(string oauth_path, string lang) {
     }
 
     try {
-        json oath_json = json::parse(oauth_file);
+        std::stringstream buffer;
+        buffer << oauth_file.rdbuf();
+        simdjson::padded_string pad_string = simdjson::padded_string(buffer.str());
+        doc = parser.iterate(pad_string);
 
-        m_oauthToken = oath_json.at("access_token");
-        m_refreshToken = oath_json.at("refresh_token");
+        view = doc["access_token"];
+        m_oauthToken = string(view.begin(), view.end());
+
+        view = doc["refresh_token"];
+        m_refreshToken = string(view.begin(), view.end());
     } catch (std::exception const&) {
         throw std::runtime_error("The OAUTH JSON file is incorrectly formatted");
     }
