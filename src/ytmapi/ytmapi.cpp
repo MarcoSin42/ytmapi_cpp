@@ -7,7 +7,6 @@
 
 #include <cpr/cpr.h>
 
-#include <nlohmann/json.hpp>
 #include <string_view>
 #include "simdjson.h"
 
@@ -118,81 +117,7 @@ Playlists YTMusicBase::getPlaylists() {
     return output;
 }
 
-
-
-// This uses the publicly available YouTube Data API
-/**
-This has the following limitations:
-    - This does not provide the album data
- */
 Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
-    Tracks output;
-    string contToken = "";
-    json r_json;
-    output.reserve(50);
-
-    cpr::Response r = cpr::Get(
-        cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems"},
-        cpr::Bearer{m_oauthToken},
-        cpr::Header{{"Accept", "application/json"}},
-        cpr::Parameters{
-            {"part", "contentDetails"},
-            {"part", "snippet"},
-            {"maxResults", "50"},
-            {"playlistId", playlistID}
-        }
-    );
-
-    r_json = json::parse(r.text);
-    for (json &entry : r_json["items"]) {
-        output.push_back(
-            Track{
-                entry["contentDetails"]["videoId"],
-                entry["snippet"]["title"],
-                ytmapi_utils::trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
-                "placeholer",
-                0,
-                0
-            }
-        );
-    }
-    
-    while (ytmapi_utils::keyExists(r_json, "nextPageToken")) {
-        contToken = r_json["nextPageToken"];
-
-        cpr::Response r = cpr::Get(
-            cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems"},
-            cpr::Bearer{m_oauthToken},
-            cpr::Header{{"Accept", "application/json"}},
-            cpr::Parameters{
-                {"part", "contentDetails"},
-                {"part", "snippet"},
-                {"maxResults", "50"},
-                {"playlistId", playlistID},
-                {"pageToken", contToken},
-            }
-        );
-        r_json = json::parse(r.text);
-        
-        for (json &entry : r_json["items"]) {
-            output.push_back(
-                Track{
-                    entry["contentDetails"]["videoId"],
-                    entry["snippet"]["title"],
-                    ytmapi_utils::trimTopicSuffix(entry["snippet"]["videoOwnerChannelTitle"]),
-                    "placeholer",
-                    0,
-                    0
-                }
-            );
-        }
-    }
-
-    return output;
-}
-
-
-Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
     Tracks output;
 
     cpr::Response r = cpr::Get(
