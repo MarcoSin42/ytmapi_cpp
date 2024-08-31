@@ -7,7 +7,7 @@ using namespace ytmapi;
 int main() {
     // Note: in order to run this example an oauth json must be within the same directory
     YTMusicBase test("oauth.json");
-    Tracks tmp = test.getPlaylistTracksPAPI("LM"); // Retrieves liked music
+    Tracks tmp = test.getPlaylistTracks("LM"); // Retrieves liked music
 
     for (Track &t : tmp) {
         std::cout << std::format("Title: {:25.25s} | Artist: {:15.15s} | Album: {:15.15s} | Duration: {:02}:{:02} | ID: {}",
