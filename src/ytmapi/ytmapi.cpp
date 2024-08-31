@@ -7,6 +7,8 @@
 #include <cpr/cpr.h>
 
 #include <nlohmann/json.hpp>
+#include <string_view>
+#include "simdjson.h"
 
 #include "ytmapi/ytmapi.hpp"
 #include "ytmapi/utils.hpp"
@@ -182,18 +184,19 @@ Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
             {"list", playlistID}
         }
     );
-    r_json = json::parse(ytmapi_utils::extractJSONstr(r.text));
-
-    int itemCount  = r_json["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["collapsedItemCount"];
-    auto trackItems = r_json["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"];
+    simdjson::ondemand::parser parser;
+    simdjson::ondemand::document doc = parser.iterate(ytmapi_utils::extractJSONstr(r.text));
+    
+    int itemCount  = doc["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["collapsedItemCount"].value();
+    simdjson::ondemand::array trackItems = doc["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"].get_array();
     output.reserve(itemCount);
 
     
-
-    for (json &musicRespLstItemRenderer : trackItems) {
+    std::string_view view;
+    for (simdjson::ondemand::value musicRespLstItemRenderer : trackItems) {
         // Yes, this is quite ugly, this API is not for public use. I'm sorry!
-        string duration_str = 
-            musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
+        view = musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
+        string duration_str(view.begin(), view.end()); 
 
         //! TODO: convert unicode characters
         string title  = getmRLIFRText(musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["flexColumns"][titleIdx]);
