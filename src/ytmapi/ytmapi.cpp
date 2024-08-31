@@ -168,7 +168,6 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
 
 Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
     Tracks output;
-    json r_json;
 
     cpr::Response r = cpr::Get(
         cpr::Url{"https://music.youtube.com/playlist"},
