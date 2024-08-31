@@ -26,13 +26,6 @@ FetchContent_Declare(cpr
 ) 
 FetchContent_MakeAvailable(cpr)
 
-FetchContent_Declare(json
-  GIT_REPOSITORY https://github.com/nlohmann/json.git
-  GIT_TAG v3.11.3
-  GIT_PROGRESS FALSE
-  GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(json)
 # Dependencies ^
 
 project(ytmpapi
@@ -54,11 +47,10 @@ target_include_directories(ytmapi
 
 target_link_libraries(ytmapi 
   PUBLIC cpr::cpr 
-  PUBLIC nlohmann_json::nlohmann_json
 )
 
 install(
-  TARGETS ytmapi cpr nlohmann_json
+  TARGETS ytmapi cpr 
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

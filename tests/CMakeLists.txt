@@ -27,4 +27,3 @@ endfunction(new_test)
 
 new_test(playlists)
 new_test(getPlaylistTracks)
-new_test(jsonparse)

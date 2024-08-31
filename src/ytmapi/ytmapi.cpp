@@ -4,19 +4,15 @@
 #include <format>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include <cpr/cpr.h>
-
-#include <nlohmann/json.hpp>
-#include <string_view>
 #include "simdjson.h"
 
 #include "ytmapi/ytmapi.hpp"
 #include "ytmapi/utils.hpp"
 
-
 using std::string, std::format;
-using json = nlohmann::json;
 
 namespace {
 // Responsive List item Flex Colum (RLIFR) 

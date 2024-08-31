@@ -4,12 +4,10 @@
 #include <iostream>
 
 #include <boost/regex.hpp>
-#include <nlohmann/json.hpp>
 
 //#include "utils.hpp"
 
 using std::string;
-using json = nlohmann::json;
 
 void inline ReplaceStringInPlace(std::string &subject, const std::string &search,
                           const std::string &replace) {
@@ -21,6 +19,7 @@ void inline ReplaceStringInPlace(std::string &subject, const std::string &search
 }
 
 namespace ytmapi_utils {
+/** 
 // Determines whether or not a key exists within a json file
 bool inline keyExists(json a_json, string key) {
     try {
@@ -29,7 +28,7 @@ bool inline keyExists(json a_json, string key) {
     } catch (std::exception const&) {
         return false;
     }
-}
+}*/
 
 // Utility function used exclusively for the 
 string inline trimTopicSuffix(string s) {
