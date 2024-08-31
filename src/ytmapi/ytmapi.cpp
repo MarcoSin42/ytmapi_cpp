@@ -1,4 +1,5 @@
 #include <cstring>
+#include <exception>
 #include <format>
 #include <iostream>
 #include <string>
@@ -13,6 +14,21 @@
 
 using std::string, std::format;
 using json = nlohmann::json;
+
+namespace {
+// Responsive List item Flex Colum (RLIFR) 
+// Indexes into a flex column entry to retrieve the text content;
+string inline getmRLIFRText(json colEntry) {
+    try {
+        return colEntry["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+    } catch (std::exception const&) { 
+        // Occurs if it's not a YouTube music native, in which case some columns are empty!
+        return "N/A";
+    }
+};
+
+}
+
 
 namespace ytmapi {
 
@@ -168,20 +184,11 @@ Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
     );
     r_json = json::parse(ytmapi_utils::extractJSONstr(r.text));
 
-    //std::cout << r_json.dump() << std::endl;
-    
     int itemCount  = r_json["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["collapsedItemCount"];
     auto trackItems = r_json["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"];
     output.reserve(itemCount);
 
-    std::cout << "Track is: " << trackItems.is_array() << "\n";
-    std::cout << "Track size: " << trackItems.size() << "\n";
-
-    // Responsive List item Flex Colum (RLIFR) 
-    // Indexes into a flex column entry to retrieve the text content;
-    auto getmRLIFRText = [&](json colEntry) -> string {
-        return colEntry["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
-    };
+    
 
     for (json &musicRespLstItemRenderer : trackItems) {
         // Yes, this is quite ugly, this API is not for public use. I'm sorry!
