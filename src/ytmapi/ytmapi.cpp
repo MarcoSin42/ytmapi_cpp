@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <format>
@@ -20,9 +21,12 @@ using json = nlohmann::json;
 namespace {
 // Responsive List item Flex Colum (RLIFR) 
 // Indexes into a flex column entry to retrieve the text content;
-string inline getmRLIFRText(json colEntry) {
+string inline getmRLIFRText(simdjson::ondemand::object colEntry) {
     try {
-        return colEntry["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        //std::string_view view = colEntry["musicResponsiveListItemFlexColumnRenderer"]["text"]["runs"][0]["text"];
+        std::string_view view = colEntry.at_path(".musicResponsiveListItemFlexColumnRenderer.text.runs[0].text");
+        string result(view.begin(), view.end());
+        return result;
     } catch (std::exception const&) { 
         // Occurs if it's not a YouTube music native, in which case some columns are empty!
         return "N/A";
@@ -166,11 +170,6 @@ Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
     Tracks output;
     json r_json;
 
-    // used to index into the raw json
-    constexpr int titleIdx = 0;
-    constexpr int artistIdx = 1;
-    constexpr int albumIdx = 2;
-
     cpr::Response r = cpr::Get(
         cpr::Url{"https://music.youtube.com/playlist"},
         cpr::Bearer{m_oauthToken},
@@ -180,33 +179,49 @@ Tracks YTMusicBase::getPlaylistTracksPAPI(string playlistID) {
             {"priority","u=0, i"},
             {"user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"}
         },
+        cpr::ReserveSize{1024 * 1024 * 8},
         cpr::Parameters{
             {"list", playlistID}
         }
     );
     simdjson::ondemand::parser parser;
-    simdjson::ondemand::document doc = parser.iterate(ytmapi_utils::extractJSONstr(r.text));
+    simdjson::padded_string pad_string = simdjson::padded_string(ytmapi_utils::extractJSONstr(r.text));
+    simdjson::ondemand::document doc = parser.iterate(pad_string);
     
-    int itemCount  = doc["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["collapsedItemCount"].value();
-    simdjson::ondemand::array trackItems = doc["contents"]["twoColumnBrowseResultsRenderer"]["secondaryContents"]["sectionListRenderer"]["contents"][0]["musicPlaylistShelfRenderer"]["contents"].get_array();
+    simdjson::ondemand::value playlistShelfRenderer = 
+        doc.at_path(".contents.twoColumnBrowseResultsRenderer.secondaryContents.sectionListRenderer.contents[0].musicPlaylistShelfRenderer");
+    
+    int itemCount = playlistShelfRenderer["collapsedItemCount"].get_int64();
     output.reserve(itemCount);
+    simdjson::ondemand::array trackItems = playlistShelfRenderer["contents"].get_array();
 
-    
+    // used to index into the raw json
+    constexpr int titleIdx  = 0;
+    constexpr int artistIdx = 1;
+    constexpr int albumIdx  = 2;
     std::string_view view;
+    string title, artist, album, videoId, duration_str;
+    
     for (simdjson::ondemand::value musicRespLstItemRenderer : trackItems) {
         // Yes, this is quite ugly, this API is not for public use. I'm sorry!
-        view = musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
-        string duration_str(view.begin(), view.end()); 
-
+        simdjson::ondemand::object listItemRenderer = musicRespLstItemRenderer["musicResponsiveListItemRenderer"];
+        
         //! TODO: convert unicode characters
-        string title  = getmRLIFRText(musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["flexColumns"][titleIdx]);
-        string artist = getmRLIFRText(musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["flexColumns"][artistIdx]);
-        string album  = getmRLIFRText(musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["flexColumns"][albumIdx]); 
-
-        string videoId = musicRespLstItemRenderer["musicResponsiveListItemRenderer"]["playlistItemData"]["videoId"];
-
+        simdjson::ondemand::array flexColumns = listItemRenderer["flexColumns"];
+        title  = getmRLIFRText(flexColumns.at(titleIdx));
+        flexColumns.reset();
+        artist = getmRLIFRText(flexColumns.at(artistIdx));
+        flexColumns.reset();
+        album  = getmRLIFRText(flexColumns.at(albumIdx)); 
+        
+        //view = listItemRenderer["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]["runs"][0]["text"];
+        view = listItemRenderer.at_path(".fixedColumns[0].musicResponsiveListItemFixedColumnRenderer.text.runs[0].text");
+        duration_str = string(view.begin(), view.end()); 
         int mins = std::stoi(duration_str.substr(0, duration_str.find(":")));
         int secs = std::stoi(duration_str.substr(duration_str.find(":") + 1));
+
+        view = listItemRenderer["playlistItemData"]["videoId"];
+        videoId = string(view.begin(), view.end());
 
         output.push_back(Track{
             videoId,

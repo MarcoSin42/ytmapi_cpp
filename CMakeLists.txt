@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.24)
 
-set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-narrowing -g")
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-narrowing")
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "$-g")
 
 
@@ -15,7 +15,7 @@ option(YTMAPI_TESTS "Set to ON to build tests" ON)
 
 # Dependencies
 include(FetchContent)
-set(FETCHCONTENT_UPDATES_DISCONNECTED OFF)
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
 set(FETCHCONTENT_QUIET ON)
 
 FetchContent_Declare(cpr 
@@ -42,6 +42,7 @@ project(ytmpapi
 add_library(ytmapi
   STATIC
   src/ytmapi/ytmapi.cpp
+  src/ytmapi/simdjson.cpp
 )
 
 target_include_directories(ytmapi
@@ -49,6 +50,11 @@ target_include_directories(ytmapi
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   PRIVATE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>"
+)
+
+target_link_libraries(ytmapi 
+  PUBLIC cpr::cpr 
+  PUBLIC nlohmann_json::nlohmann_json
 )
 
 install(
@@ -59,11 +65,6 @@ install(
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-
-target_link_libraries(ytmapi 
-  PUBLIC cpr::cpr 
-  PUBLIC nlohmann_json::nlohmann_json
-)
 
 include(cmake/ytmapi_export.cmake)
 add_subdirectory(tests)
