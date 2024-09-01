@@ -1,5 +1,6 @@
 #ifndef YTM_API_H
 #define YTM_API_H
+#include "cpr/api.h"
 #include <string>
 #include <vector>
 
@@ -40,6 +41,8 @@ class YTMusicBase {
         Tracks getPlaylistTracks(string playlistID);
         Playlists getPlaylists();    
     
+    private:
+        cpr::AsyncResponse contPlaylist(const string & ctoken);
 };
 };
 #endif
