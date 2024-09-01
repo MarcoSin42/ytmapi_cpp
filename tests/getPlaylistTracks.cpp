@@ -1,6 +1,8 @@
+#include <chrono>
 #include <cstdio>
 #include <format>
 #include <iostream>
+#include <ostream>
 #include "ytmapi/ytmapi.hpp"
 
 using namespace ytmapi;
