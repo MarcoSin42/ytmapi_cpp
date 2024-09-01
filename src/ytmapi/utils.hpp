@@ -2,6 +2,8 @@
 #define YTMAPI_UTILS_HPP
 
 
+#include <chrono>
+#include <format>
 #include <iostream>
 
 #include <boost/regex.hpp>
@@ -69,7 +71,7 @@ string inline extractJSONstr(string s) {
     // I wish boost supported variable length look behind
     // This is a workaround
     boost::regex re1(R"~((\/browse)',(.*)(\\x7d))~");
-    boost::regex re2(R"~((data: ')(.+)(\\x7d))~");
+    boost::regex re2(R"~((data: ')(.+))~");
     boost::smatch m1, m2;
 
     if (!boost::regex_search(s, m1, re1)) {
