@@ -225,6 +225,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
     appendTracks(output, trackItems);
 
     // Asynchronous stuff
+    //! TODO: There is a potential optimization here by removing the reset() call and reordering 
     while ((r = ar.get()).status_code < 400) {
         if (contToken == "")
             break;
