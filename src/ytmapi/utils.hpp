@@ -1,6 +1,7 @@
 #ifndef YTMAPI_UTILS_HPP
 #define YTMAPI_UTILS_HPP
 
+
 #include <iostream>
 
 #include <boost/regex.hpp>
@@ -11,11 +12,31 @@ using std::string;
 
 void inline ReplaceStringInPlace(std::string &subject, const std::string &search,
                           const std::string &replace) {
-  size_t pos = 0;
-  while ((pos = subject.find(search, pos)) != std::string::npos) {
-    subject.replace(pos, search.length(), replace);
-    pos += replace.length();
-  }
+    size_t pos = 0;
+
+    while ((pos = subject.find(search, pos)) != std::string::npos) {
+        subject.replace(pos, search.length(), replace);
+        pos += replace.length();
+    }
+}
+
+
+string replacementCallback(const boost::smatch& match) {
+    if (match.str() == R"(\x7b)") {
+        return "{";
+    } else if (match.str() == R"(\x7d)") {
+        return "}";
+    } else if (match.str() == R"(\x22)") {
+        return R"(")";
+    } else if (match.str() == R"(\x5b)") {
+        return "[";
+    } else if (match.str() == R"(\x5d)") {
+        return "]";
+    } else if (match.str() == R"(\)") {
+        return "";
+    }
+
+    return "";
 }
 
 namespace ytmapi_utils {
@@ -60,14 +81,10 @@ string inline extractJSONstr(string s) {
         std::cerr << "Warning: YouTube Music may have changed their API\n";
         throw std::runtime_error("No Regex matches occured when looking for JSON string.");
     }
-    string out = m2[0];
-
-    ReplaceStringInPlace(out, R"(\x7b)", R"({)");
-    ReplaceStringInPlace(out, R"(\x7d)", R"(})");
-    ReplaceStringInPlace(out, R"(\x22)", R"(")");
-    ReplaceStringInPlace(out, R"(\x5b)", R"([)");
-    ReplaceStringInPlace(out, R"(\x5d)", R"(])");
-    ReplaceStringInPlace(out, R"(\)", R"()");
+    // m2[0]
+    string input = m2[0].str(); 
+    boost::regex re(R"~((\\x7b)|(\\x7d)|(\\x22)|(\\x5b)|(\\x5d)|\\)~");
+    string out = boost::regex_replace(input, re, replacementCallback, boost::regex_constants::match_default);
 
     return out.substr(7);
 }
