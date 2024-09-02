@@ -14,3 +14,29 @@ Then, you want to initialize a `YTMusicBase` by passing it the path to your `oau
 
 Read the header filer.  Currently this only supports retrieval of playlists and retrieval of track information.  In the future, I plan on reaching feature parity with the Python library.  
 
+## Feature list and todo
+
+- [x] Getting user playlists - getPlaylists
+- [x] Getting track information of a songs in a playlist - getPlaylistTrack
+- [ ] A way to prompt the user to get an OAUTH token
+- [ ] Getting artist information
+- [ ] Retrieving song meta data
+
+### Exploring music
+- [ ] Get latest charts globe and country
+- [ ] Retrieval of moods and genre playlists
+
+### Library management
+- [ ] Get library contents: playlists, songs, artists, albums and subscriptions
+- [ ] add/remove library content: rate songs, albums and playlists, subscribe/unsubscribe artists
+- [ ] get and modify play history
+
+### Playlists
+- [ ] Create and delete playlists
+- [ ] Modify playlists: edit metadata, add/move/remove tracks
+- [x] Get playlist contents
+- [ ] Get playlist suggestions
+
+### Localization features
+- [x] Only English is supported
+- [ ] Localization support
