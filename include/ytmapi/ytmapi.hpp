@@ -1,7 +1,10 @@
 #ifndef YTM_API_H
 #define YTM_API_H
 #include "cpr/api.h"
+#include <chrono>
+#include <cstdint>
 #include <string>
+#include <sys/types.h>
 #include <vector>
 
 using std::string;
@@ -35,7 +38,8 @@ class YTMusicBase {
         string m_refreshToken;
         string m_language;
         string m_location;
-    
+        
+        std::chrono::seconds m_expires_at; // Unix epoch time
     public:
         YTMusicBase(string oauth_path, string lang = "en");
         Tracks getPlaylistTracks(string playlistID);
@@ -43,6 +47,8 @@ class YTMusicBase {
     
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
+
+        inline bool validOauth();
 };
 };
 #endif
