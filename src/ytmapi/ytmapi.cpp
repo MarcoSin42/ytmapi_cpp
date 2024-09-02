@@ -226,10 +226,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
 
     // Asynchronous stuff
     //! TODO: There is a potential optimization here by removing the reset() call and reordering 
-    while ((r = ar.get()).status_code < 400) {
-        if (contToken == "")
-            break;
-
+    while (contToken != "" && (r = ar.get()).status_code < 400) {
         pad_string = simdjson::padded_string(r.text);
         doc = parser.iterate(pad_string);
 
