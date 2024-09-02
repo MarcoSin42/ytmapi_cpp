@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
@@ -150,6 +151,9 @@ YTMusicBase::YTMusicBase(string oauth_path, string lang) {
 
         view = doc["refresh_token"];
         m_refreshToken = string(view.begin(), view.end());
+
+        uint64_t dur_raw = doc["expires_at"].get_uint64();
+        m_expires_at = std::chrono::seconds(dur_raw);
     } catch (std::exception const&) {
         throw std::runtime_error("The OAUTH JSON file is incorrectly formatted");
     }
