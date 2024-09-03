@@ -1,9 +1,11 @@
 #include <chrono>
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <format>
+#include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -11,14 +13,19 @@
 
 #include <cpr/cpr.h>
 #include "cpr/api.h"
+#include "cpr/cprtypes.h"
 #include "cpr/parameters.h"
 #include "cpr/response.h"
 #include "simdjson.h"
+
 
 #include "ytmapi/ytmapi.hpp"
 #include "ytmapi/utils.hpp"
 
 using std::string, std::format;
+
+std::string ytmCLIENT_ID = "1030788119864-ve66t4k7qsfmdu93c3u1ku09mie1vre7.apps.googleusercontent.com";
+std::string ytmCLIENT_SECRET = "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";
 
 namespace {
 // Responsive List item Flex Colum (RLIFR) 
@@ -146,13 +153,13 @@ YTMusicBase::YTMusicBase(string oauth_path, string lang) {
         simdjson::padded_string pad_string = simdjson::padded_string(buffer.str());
         doc = parser.iterate(pad_string);
 
-        view = doc["access_token"];
+        view = doc.find_field_unordered("access_token");
         m_oauthToken = string(view.begin(), view.end());
 
-        view = doc["refresh_token"];
+        view = doc.find_field_unordered("refresh_token");
         m_refreshToken = string(view.begin(), view.end());
 
-        uint64_t dur_raw = doc["expires_at"].get_uint64();
+        uint64_t dur_raw = doc.find_field_unordered("expires_in").get_uint64();
         m_expires_at = std::chrono::seconds(dur_raw);
     } catch (std::exception const&) {
         throw std::runtime_error("The OAUTH JSON file is incorrectly formatted");
@@ -258,6 +265,81 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
     return output;
 }
 
+void YTMusicBase::requestOAuth() {
+    cpr::Response r = cpr::Post(
+        cpr::Url{"https://oauth2.googleapis.com/device/code"},
+        cpr::Parameters{
+            {"client_id", ytmCLIENT_ID},
+            {"scope", R"~(https://www.googleapis.com/auth/youtube)~"},
+        }
+    );
+    switch (r.status_code) {
+        case 403:
+            throw std::runtime_error("Error code 403: Too many requests for authentication");
+        case 400:
+            throw std::runtime_error("Error code 400: We have an error, but we don't know what");
+    };
+
+    std::cout << r.text << std::endl;
+
+    simdjson::ondemand::parser parser;
+    simdjson::padded_string pad_string = simdjson::padded_string(r.text);
+    simdjson::ondemand::document doc = parser.iterate(pad_string);
+    std::string_view view;
+
+    view = doc.at_path(".device_code");
+    string device_code = string(view.begin(), view.end());
+
+    view = doc.at_path(".user_code");
+    string user_code = string(view.begin(), view.end());
+
+    view = doc.at_path(".verification_url");
+    string verification_url = string(view.begin(), view.end());
+
+    string verification_link = verification_url + "?user_code=" + user_code; 
+    #ifdef  _WIN64
+    ShellExecute(0, 0, verification_link, 0, 0 , SW_SHOW ); // Untested on windows
+    #elif __linux__
+    system(format("xdg-open {}", verification_link).c_str());
+    #endif
+
+    do 
+    {
+    std::cout << '\n' << "Press enter once you have authorized an OAUTH request";
+    } while (std::cin.get() != '\n');
+
+    r = cpr::Post(
+      cpr::Url{"https://oauth2.googleapis.com/token"},
+      cpr::Parameters{
+        {"client_id", ytmCLIENT_ID},
+        {"client_secret", ytmCLIENT_SECRET},
+        {"code", device_code},
+        {"grant_type", R"(http://oauth.net/grant_type/device/1.0)"},
+      }  
+    );
+
+    std::ofstream oauth_file("oauth.json");
+    oauth_file << r.text;
+    oauth_file.close();
+
+
+    try {
+        simdjson::padded_string pad_string = simdjson::padded_string(r.text);
+        doc = parser.iterate(pad_string);
+
+        view = doc.find_field_unordered("access_token");
+        m_oauthToken = string(view.begin(), view.end());
+
+        view = doc.find_field_unordered("refresh_token");
+        m_refreshToken = string(view.begin(), view.end());
+
+        uint64_t dur_raw = doc.find_field_unordered("expires_in").get_uint64();
+        m_expires_at = std::chrono::seconds(dur_raw);
+    } catch (std::exception const&) {
+        throw std::runtime_error("The OAUTH JSON file is incorrectly formatted");
+    }
+
+}
 
 
 }; // namespace ytmapi

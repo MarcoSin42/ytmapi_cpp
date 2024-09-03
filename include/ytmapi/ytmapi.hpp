@@ -2,7 +2,6 @@
 #define YTM_API_H
 #include "cpr/api.h"
 #include <chrono>
-#include <cstdint>
 #include <string>
 #include <sys/types.h>
 #include <vector>
@@ -26,6 +25,14 @@ struct Track {
     int secs;
 };
 
+struct AuthResponse {
+    string device_code;
+    string user_code;
+    string verification_url; 
+    int expiration_s; // When the request expires and is invalidated (seconds)
+    int interval_s; // Rate at which the device should poll google's servers (seconds)
+};
+
 string extractJSONstr(string s);
 
 using Playlists = std::vector<Playlist>;
@@ -43,7 +50,9 @@ class YTMusicBase {
     public:
         YTMusicBase(string oauth_path, string lang = "en");
         Tracks getPlaylistTracks(string playlistID);
-        Playlists getPlaylists();    
+        Playlists getPlaylists();
+
+        void requestOAuth();
     
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
