@@ -16,6 +16,7 @@
 #include "cpr/cprtypes.h"
 #include "cpr/parameters.h"
 #include "cpr/response.h"
+#include "cpr/status_codes.h"
 #include "simdjson.h"
 
 
@@ -168,6 +169,10 @@ YTMusicBase::YTMusicBase(string oauth_path, string lang) {
     m_language = lang;
 }
 
+YTMusicBase::YTMusicBase() {
+    requestOAuth();
+}
+
 
 Playlists YTMusicBase::getPlaylists() {
     Playlists output;
@@ -317,11 +322,12 @@ void YTMusicBase::requestOAuth() {
         {"grant_type", R"(http://oauth.net/grant_type/device/1.0)"},
       }  
     );
+    if (r.status_code != cpr::status::HTTP_OK)
+        throw std::runtime_error("Error: Did you accept the OAUTH request?");
 
     std::ofstream oauth_file("oauth.json");
     oauth_file << r.text;
     oauth_file.close();
-
 
     try {
         simdjson::padded_string pad_string = simdjson::padded_string(r.text);
@@ -336,7 +342,8 @@ void YTMusicBase::requestOAuth() {
         uint64_t dur_raw = doc.find_field_unordered("expires_in").get_uint64();
         m_expires_at = std::chrono::seconds(dur_raw);
     } catch (std::exception const&) {
-        throw std::runtime_error("The OAUTH JSON file is incorrectly formatted");
+        // Should not happen, unless the API has changed
+        throw std::runtime_error("The OAuth JSON response was unable to be parsed.  Did YouTube change their API?");
     }
 
 }

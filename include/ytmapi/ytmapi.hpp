@@ -49,6 +49,7 @@ class YTMusicBase {
         std::chrono::seconds m_expires_at; // Unix epoch time
     public:
         YTMusicBase(string oauth_path, string lang = "en");
+        YTMusicBase();
         Tracks getPlaylistTracks(string playlistID);
         Playlists getPlaylists();
 
