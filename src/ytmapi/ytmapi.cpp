@@ -14,7 +14,6 @@
 #include <cpr/cpr.h>
 #include "cpr/api.h"
 #include "cpr/cprtypes.h"
-#include "cpr/error.h"
 #include "cpr/parameters.h"
 #include "cpr/response.h"
 #include "cpr/status_codes.h"
@@ -104,7 +103,7 @@ inline bool YTMusicBase::validOauth() {
     using namespace std::chrono;
     auto currentEpoch_ms = system_clock::now();
     if (std::chrono::duration_cast<seconds>(currentEpoch_ms.time_since_epoch()) < m_expires_at)
-        throw std::runtime_error("Invalidated OAUTH token: Token is expired, please get a new one.");
+        return false;
 
     return true;
 }
