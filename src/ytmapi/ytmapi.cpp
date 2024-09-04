@@ -346,22 +346,19 @@ void YTMusic::requestOAuth() {
     #elif __linux__
     system(format("xdg-open {}", verification_link).c_str());
     #endif
-    do
-    {
-    do 
-    {
-    std::cout << '\n' << "Press enter once you have authorized an OAUTH request or CTRL+C to cancel";
-    } while (std::cin.get() != '\n');
+    do {
+        do {
+            std::cout << '\n' << "Press enter once you have authorized an OAUTH request or CTRL+C to cancel";
+        } while (std::cin.get() != '\n');
 
-    r = cpr::Post(
-      cpr::Url{"https://oauth2.googleapis.com/token"},
-      cpr::Parameters{
-        {"client_id", ytmCLIENT_ID},
-        {"client_secret", ytmCLIENT_SECRET},
-        {"code", device_code},
-        {"grant_type", R"(http://oauth.net/grant_type/device/1.0)"},
-      }  
-    );
+        r = cpr::Post(
+        cpr::Url{"https://oauth2.googleapis.com/token"},
+        cpr::Parameters{
+            {"client_id", ytmCLIENT_ID},
+            {"client_secret", ytmCLIENT_SECRET},
+            {"code", device_code},
+            {"grant_type", R"(http://oauth.net/grant_type/device/1.0)"},
+        });
     } while (r.status_code != cpr::status::HTTP_OK);
 
     std::ofstream oauth_file("oauth.json");
