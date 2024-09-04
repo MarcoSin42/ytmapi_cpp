@@ -32,7 +32,7 @@ using Playlists = std::vector<Playlist>;
 using Tracks = std::vector<Track>;
 
 
-class YTMusicBase {
+class YTMusic {
     private:
         string m_oauthToken;
         string m_refreshToken;
@@ -41,8 +41,8 @@ class YTMusicBase {
         
         std::chrono::seconds m_expires_at; // Unix epoch time
     public:
-        YTMusicBase(string oauth_path, string lang = "en");
-        YTMusicBase();
+        YTMusic(string oauth_path, string lang = "en");
+        YTMusic();
         Tracks getPlaylistTracks(string playlistID);
         Playlists getPlaylists();
 

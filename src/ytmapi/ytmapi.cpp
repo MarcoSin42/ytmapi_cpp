@@ -101,7 +101,7 @@ void inline appendTracks(ytmapi::Tracks &output, simdjson::ondemand::array track
 
 namespace ytmapi {
 
-inline bool YTMusicBase::validOauth() {
+inline bool YTMusic::validOauth() {
     using namespace std::chrono;
     auto currentEpoch_ms = system_clock::now();
     if (std::chrono::duration_cast<seconds>(currentEpoch_ms.time_since_epoch()) < m_expires_at)
@@ -110,7 +110,7 @@ inline bool YTMusicBase::validOauth() {
     return true;
 }
 
-cpr::AsyncResponse YTMusicBase::contPlaylist(const string &ctoken) {
+cpr::AsyncResponse YTMusic::contPlaylist(const string &ctoken) {
     return cpr::PostAsync(
         cpr::Url{"https://music.youtube.com/youtubei/v1/browse"},
         cpr::Bearer{m_oauthToken},
@@ -135,7 +135,7 @@ string extractJSONstr(string s) {
 }
 
 
-YTMusicBase::YTMusicBase(string oauth_path, string lang) {
+YTMusic::YTMusic(string oauth_path, string lang) {
     std::ifstream oauth_file;
 
     simdjson::ondemand::parser parser;
@@ -171,12 +171,12 @@ YTMusicBase::YTMusicBase(string oauth_path, string lang) {
     m_language = lang;
 }
 
-YTMusicBase::YTMusicBase() {
+YTMusic::YTMusic() {
     requestOAuth();
 }
 
 
-Playlists YTMusicBase::getPlaylists() {
+Playlists YTMusic::getPlaylists() {
     Playlists output;
     
     cpr::Response r = cpr::Post(
@@ -219,7 +219,7 @@ Playlists YTMusicBase::getPlaylists() {
     return output;
 }
 
-Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
+Tracks YTMusic::getPlaylistTracks(string playlistID) {
     Tracks output;
 
     cpr::Response r = cpr::Get(
@@ -279,7 +279,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
 }
 
 // Refreshes the OAUTH token, returns true if successful, false otherwise
-bool YTMusicBase::refreshOAuth() {
+bool YTMusic::refreshOAuth() {
     cpr::Response r = cpr::Post(
         cpr::Url{"https://oauth2.googleapis.com/token"},
         cpr::Parameters{
@@ -309,7 +309,7 @@ bool YTMusicBase::refreshOAuth() {
     return true;
 }
 
-void YTMusicBase::requestOAuth() {
+void YTMusic::requestOAuth() {
     cpr::Response r = cpr::Post(
         cpr::Url{"https://oauth2.googleapis.com/device/code"},
         cpr::Parameters{

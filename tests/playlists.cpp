@@ -5,7 +5,7 @@ using namespace ytmapi;
 
 int main() {
     // Note: in order to run this example an oauth json must be within the same directory
-    YTMusicBase test("oauth.json");
+    YTMusic test("oauth.json");
 
     test.requestOAuth();
     Playlists tmp = test.getPlaylists();
