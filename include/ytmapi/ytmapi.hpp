@@ -54,6 +54,7 @@ class YTMusicBase {
         Playlists getPlaylists();
 
         void requestOAuth();
+        bool refreshOAuth();
     
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);

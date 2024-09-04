@@ -14,6 +14,7 @@
 #include <cpr/cpr.h>
 #include "cpr/api.h"
 #include "cpr/cprtypes.h"
+#include "cpr/error.h"
 #include "cpr/parameters.h"
 #include "cpr/response.h"
 #include "cpr/status_codes.h"
@@ -268,6 +269,37 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
 
 
     return output;
+}
+
+// Refreshes the OAUTH token, returns true if successful, false otherwise
+bool YTMusicBase::refreshOAuth() {
+    cpr::Response r = cpr::Post(
+        cpr::Url{"https://oauth2.googleapis.com/token"},
+        cpr::Parameters{
+            {"client_id", ytmCLIENT_ID},
+            {"client_secret", ytmCLIENT_SECRET}, 
+            {"refresh_token", m_refreshToken},
+            {"grant_type", "refresh_token"}
+        }
+    );
+    if (r.status_code != cpr::status::HTTP_OK) // Unsure how to deal with this semantic-wise, allow the caller to handle this and return false or to throw an exception
+        return false;
+    
+    simdjson::ondemand::parser parser;
+    simdjson::padded_string pad_string = simdjson::padded_string(r.text);
+    simdjson::ondemand::document doc = parser.iterate(pad_string);
+    
+    std::string_view view;
+    
+    view = doc.find_field_unordered("access_token");
+    m_oauthToken = string(view.begin(), view.end());
+
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    uint64_t expires_in = doc.find_field_unordered("expires_in").get_uint64();
+    m_expires_at =  duration_cast<seconds>(now.time_since_epoch()) + seconds(expires_in);
+    
+    return true;
 }
 
 void YTMusicBase::requestOAuth() {
