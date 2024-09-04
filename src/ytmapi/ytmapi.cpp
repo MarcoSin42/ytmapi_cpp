@@ -346,10 +346,11 @@ void YTMusic::requestOAuth() {
     #elif __linux__
     system(format("xdg-open {}", verification_link).c_str());
     #endif
-
+    do
+    {
     do 
     {
-    std::cout << '\n' << "Press enter once you have authorized an OAUTH request";
+    std::cout << '\n' << "Press enter once you have authorized an OAUTH request or CTRL+C to cancel";
     } while (std::cin.get() != '\n');
 
     r = cpr::Post(
@@ -361,8 +362,7 @@ void YTMusic::requestOAuth() {
         {"grant_type", R"(http://oauth.net/grant_type/device/1.0)"},
       }  
     );
-    if (r.status_code != cpr::status::HTTP_OK)
-        throw std::runtime_error("Error: Did you accept the OAUTH request?");
+    } while (r.status_code != cpr::status::HTTP_OK);
 
     std::ofstream oauth_file("oauth.json");
     oauth_file << r.text;
