@@ -25,13 +25,6 @@ struct Track {
     int secs;
 };
 
-struct AuthResponse {
-    string device_code;
-    string user_code;
-    string verification_url; 
-    int expiration_s; // When the request expires and is invalidated (seconds)
-    int interval_s; // Rate at which the device should poll google's servers (seconds)
-};
 
 string extractJSONstr(string s);
 
