@@ -25,6 +25,8 @@
 
 using std::string, std::format;
 
+// Yes, I know this is bad practises and it should open up a file on the user's computer.  However, I don't really care if you use my free 10,000 tokens.
+// This isn't even linked to my Personal Google account :P
 std::string ytmCLIENT_ID = "1030788119864-ve66t4k7qsfmdu93c3u1ku09mie1vre7.apps.googleusercontent.com";
 std::string ytmCLIENT_SECRET = "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";
 
