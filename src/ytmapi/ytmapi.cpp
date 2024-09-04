@@ -190,6 +190,9 @@ Playlists YTMusicBase::getPlaylists() {
         },
         cpr::Body{R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240819.01.00"}}})~"}
     );
+    if (r.status_code != cpr::status::HTTP_OK)
+        throw std::runtime_error(format("getPlaylists() HTTP request returned status code: {}", r.status_code));
+
     simdjson::ondemand::parser parser;
     simdjson::padded_string pad_string = simdjson::padded_string(r.text);
     simdjson::ondemand::document doc = parser.iterate(pad_string);
