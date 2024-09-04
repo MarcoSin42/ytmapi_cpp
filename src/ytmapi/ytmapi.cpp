@@ -19,6 +19,9 @@
 #include "cpr/status_codes.h"
 #include "simdjson.h"
 
+#ifdef _WIN64
+#include <windows.h>
+#endif
 
 #include "ytmapi/ytmapi.hpp"
 #include "ytmapi/utils.hpp"
