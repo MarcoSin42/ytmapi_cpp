@@ -232,6 +232,9 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
             {"list", playlistID}
         }
     );
+    if (r.status_code != cpr::status::HTTP_OK)
+        throw std::runtime_error(format("Attempted to get the following playlistID: {}.  Got an error code.  Is the PlaylistID valid?", playlistID));
+
     simdjson::ondemand::parser parser;
     simdjson::padded_string pad_string = simdjson::padded_string(ytmapi_utils::extractJSONstr(r.text));
     simdjson::ondemand::document doc = parser.iterate(pad_string);
@@ -253,7 +256,7 @@ Tracks YTMusicBase::getPlaylistTracks(string playlistID) {
 
     // Asynchronous stuff
     //! TODO: There is a potential optimization here by removing the reset() call and reordering 
-    while (contToken != "" && (r = ar.get()).status_code < 400) {
+    while (contToken != "" && (r = ar.get()).status_code != cpr::status::HTTP_OK) {
         pad_string = simdjson::padded_string(r.text);
         doc = parser.iterate(pad_string);
 
@@ -298,7 +301,7 @@ bool YTMusicBase::refreshOAuth() {
     auto now = system_clock::now();
     uint64_t expires_in = doc.find_field_unordered("expires_in").get_uint64();
     m_expires_at =  duration_cast<seconds>(now.time_since_epoch()) + seconds(expires_in);
-    
+
     return true;
 }
 
