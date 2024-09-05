@@ -125,7 +125,7 @@ cpr::AsyncResponse YTMusic::contPlaylist(const string &ctoken) {
         },
         cpr::Parameters{
             {"continuation", ctoken},
-            {"prettyPrint","true"},
+            {"prettyPrint","false"},
         },
         cpr::ReserveSize{1024 * 1024 * 4},
         cpr::Body{R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240819.01.00"}}})~"}
@@ -183,14 +183,17 @@ Playlists YTMusic::getPlaylists() {
     Playlists output;
     
     cpr::Response r = cpr::Post(
-        cpr::Url{"https://music.youtube.com/youtubei/v1/guide?prettyPrint=true"},
+        cpr::Url{"https://music.youtube.com/youtubei/v1/guide"},
         cpr::Bearer{m_oauthToken},
         cpr::Header{
             {"accept", "*/*"},
             {"accept-language", "en-US"}, // TODO: Allow for different languages later
             {"Authorization", format("Bearer {}", m_oauthToken)}, // TODO: Allow for other types of authentication
             {"content-type", "application/json"},
-            {"priority", "u=1, i"}
+            {"priority", "u=1, i"},
+        },
+        cpr::Parameters{
+            {"prettyPrint", "false"}
         },
         cpr::Body{R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240819.01.00"}}})~"}
     );
