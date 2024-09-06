@@ -125,7 +125,6 @@ cpr::AsyncResponse YTMusic::contPlaylist(const string &ctoken) {
         },
         cpr::Parameters{
             {"continuation", ctoken},
-            {"prettyPrint","false"},
         },
         cpr::ReserveSize{1024 * 1024 * 4},
         cpr::Body{R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240819.01.00"}}})~"}
