@@ -48,7 +48,9 @@ class YTMusic {
 
         void requestOAuth();
         bool refreshOAuth();
-    
+
+        bool createPlaylist(string title);
+
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
 

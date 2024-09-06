@@ -60,7 +60,7 @@ install(
 
 
 include(cmake/ytmapi_export.cmake)
-add_subdirectory(tests)
+add_subdirectory(examples)
 
 
 

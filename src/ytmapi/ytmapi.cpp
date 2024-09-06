@@ -13,6 +13,7 @@
 
 #include <cpr/cpr.h>
 #include "cpr/api.h"
+#include "cpr/bearer.h"
 #include "cpr/cprtypes.h"
 #include "cpr/parameters.h"
 #include "cpr/response.h"
@@ -265,7 +266,7 @@ Tracks YTMusic::getPlaylistTracks(string playlistID) {
 
     // Asynchronous stuff
     //! TODO: There is a potential optimization here by removing the reset() call and reordering 
-    while (contToken != "" && (r = ar.get()).status_code != cpr::status::HTTP_OK) {
+    while (contToken != "" && (r = ar.get()).status_code == cpr::status::HTTP_OK) {
         pad_string = simdjson::padded_string(r.text);
         doc = parser.iterate(pad_string);
 
@@ -387,6 +388,25 @@ void YTMusic::requestOAuth() {
         throw std::runtime_error("The OAuth JSON response was unable to be parsed.  Did YouTube change their API?");
     }
 
+}
+
+bool YTMusic::createPlaylist(string title) {
+    cpr::Response r =  cpr::Post(
+        cpr::Url{"https://music.youtube.com/youtubei/v1/playlist/create"},
+        cpr::Bearer{m_oauthToken},
+        cpr::Header{
+            {"accept", "*/*"},
+            {"accept-language","en-GB,en-US;q=0.9,en;q=0.8,fr;q=0.7"},
+            {"content-type", "application/json"},
+            {"priority", "u=1, i"},
+            {"user-agent", " Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"}
+        },
+        cpr::Body(
+            format("")
+        )
+    );
+
+    return true;
 }
 
 
