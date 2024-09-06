@@ -391,6 +391,12 @@ void YTMusic::requestOAuth() {
 }
 
 bool YTMusic::createPlaylist(string title) {
+    // This is quite messy, but this would be even messier using std::format
+    string body = 
+    R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240827.03.00"}},"title":")~" 
+    +title 
+    +R"~(","privacyStatus":"PUBLIC"})~";
+
     cpr::Response r =  cpr::Post(
         cpr::Url{"https://music.youtube.com/youtubei/v1/playlist/create"},
         cpr::Bearer{m_oauthToken},
@@ -402,10 +408,12 @@ bool YTMusic::createPlaylist(string title) {
             {"user-agent", " Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"}
         },
         cpr::Body(
-            format("")
+            body
         )
     );
-
+    if (r.status_code != cpr::status::HTTP_OK)
+        return false;
+    
     return true;
 }
 

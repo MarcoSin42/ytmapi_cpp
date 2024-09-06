@@ -38,7 +38,8 @@ For a comprehensive list of features, you should consult the header file.
 - [ ] get and modify play history
 
 ### Playlists
-- [ ] Create and delete playlists
+- [x] Create playlists
+- [ ] Delete playlists
 - [ ] Modify playlists: edit metadata, add/move/remove tracks
 - [x] Get playlist contents
 - [ ] Get playlist suggestions
