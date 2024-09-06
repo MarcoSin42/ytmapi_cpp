@@ -50,6 +50,7 @@ class YTMusic {
         bool refreshOAuth();
 
         bool createPlaylist(string title);
+        bool delPlaylist(string playlistID);
 
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);

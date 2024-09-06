@@ -39,7 +39,7 @@ For a comprehensive list of features, you should consult the header file.
 
 ### Playlists
 - [x] Create playlists
-- [ ] Delete playlists
+- [x] Delete playlists
 - [ ] Modify playlists: edit metadata, add/move/remove tracks
 - [x] Get playlist contents
 - [ ] Get playlist suggestions
