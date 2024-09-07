@@ -390,6 +390,7 @@ void YTMusic::requestOAuth() {
 
 }
 
+// Tell YT to create a new playlist.  Returns true upon success and false otherwise.
 bool YTMusic::createPlaylist(string title) {
     // This is quite messy, but this would be even messier using std::format
     string body = 
@@ -417,7 +418,7 @@ bool YTMusic::createPlaylist(string title) {
     return true;
 }
 
-// untested
+// Delete a given playlist with given ID.  Returns true if successful and false otherwise.
 bool YTMusic::delPlaylist(string playlistID) {
     // This is quite messy, but this would be even messier using std::format
     string body = 
