@@ -49,7 +49,7 @@ string inline getmRLIFRText(simdjson::ondemand::object colEntry) {
     }
 };
 
-string inline getCToken(simdjson::ondemand::object obj) {
+string inline getContinuationToken(simdjson::ondemand::object obj) {
     try {
         //std::string_view view = obj.find_field_unordered("continuations").at(0)["nextContinuationData"]["continuation"];
         std::string_view view = obj.at_path(".continuations[0].nextContinuationData.continuation");
@@ -105,7 +105,7 @@ void inline appendTracks(ytmapi::Tracks &output, simdjson::ondemand::array track
 
 namespace ytmapi {
 
-inline bool YTMusic::validOauth() {
+inline bool YTMusic::isValidOauth() {
     using namespace std::chrono;
     auto currentEpoch_ms = system_clock::now();
     if (std::chrono::duration_cast<seconds>(currentEpoch_ms.time_since_epoch()) < m_expires_at)
@@ -258,7 +258,7 @@ Tracks YTMusic::getPlaylistTracks(string playlistID) {
     output.reserve(itemCount);
     simdjson::ondemand::array trackItems = playlistShelfRenderer["contents"].get_array();
 
-    string contToken = getCToken(playlistShelfRenderer);
+    string contToken = getContinuationToken(playlistShelfRenderer);
     cpr::AsyncResponse ar = contPlaylist(contToken);
     
     trackItems.reset();
@@ -272,7 +272,7 @@ Tracks YTMusic::getPlaylistTracks(string playlistID) {
 
         simdjson::ondemand::object contContents = doc["continuationContents"]["musicPlaylistShelfContinuation"];
         trackItems = contContents["contents"];
-        contToken = getCToken(contContents);
+        contToken = getContinuationToken(contContents);
 
         ar = contPlaylist(contToken);
         

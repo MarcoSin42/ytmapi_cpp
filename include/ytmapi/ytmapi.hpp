@@ -55,7 +55,7 @@ class YTMusic {
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
 
-        inline bool validOauth();
+        inline bool isValidOauth();
 };
 };
 #endif
