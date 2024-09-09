@@ -510,4 +510,9 @@ bool YTMusic::dislikeSong(string videoId) {
     return false;
 }
 
+// I know, seems redundant.
+bool YTMusic::undislikeSong(string videoId) {
+    return unlikeSong(videoId);
+}
+
 }; // namespace ytmapi
