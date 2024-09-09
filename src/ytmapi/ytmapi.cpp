@@ -447,4 +447,25 @@ bool YTMusic::delPlaylist(string playlistID) {
     return true;
 }
 
+bool YTMusic::likeSong(string videoId) {
+    string body =
+    R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "target": {"videoId": ")~"
+    +videoId
+    +R"~("}})~";
+
+    cpr::Response r = cpr::Post(
+        cpr::Url{"https://music.youtube.com/youtubei/v1/like/like?prettyPrint=false"},
+        cpr::Bearer{m_oauthToken},
+        cpr::Header{
+            {"content-type",  "application/json"},
+        },
+        cpr::Body{body}
+    );
+    
+    if (r.status_code == cpr::status::HTTP_OK)
+        return true;
+
+    return false;
+}
+
 }; // namespace ytmapi

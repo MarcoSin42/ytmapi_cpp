@@ -52,6 +52,8 @@ class YTMusic {
         bool createPlaylist(string title);
         bool delPlaylist(string playlistID);
 
+        bool likeSong(string videoId);
+
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
 
