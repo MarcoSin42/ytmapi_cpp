@@ -51,6 +51,7 @@ class YTMusic {
 
         bool createPlaylist(string title);
         bool delPlaylist(string playlistID);
+        bool addSongToPlaylist(string playlistID, string videoId);
 
         bool likeSong(string videoId);
         bool unlikeSong(string videoId);
