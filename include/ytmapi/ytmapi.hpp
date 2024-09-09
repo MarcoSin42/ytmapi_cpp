@@ -53,7 +53,9 @@ class YTMusic {
         bool delPlaylist(string playlistID);
 
         bool likeSong(string videoId);
-
+        bool unlikeSong(string videoId);
+        bool dislikeSong(string videoId);
+        bool undislikeSong(string videoId);
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
 
