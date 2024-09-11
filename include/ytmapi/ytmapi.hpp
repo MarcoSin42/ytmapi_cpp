@@ -17,7 +17,8 @@ struct Playlist {
 };
 
 struct Track {
-    string id; 
+    string videoId;
+    string setVideoId; // This is distinct from videoId as it makes it distinct from copies within the same playlist
     string title;
     string artist;
     string album;
@@ -50,8 +51,9 @@ class YTMusic {
         bool refreshOAuth();
 
         bool createPlaylist(string title);
-        bool delPlaylist(string playlistID);
+        bool delSongFromPlaylist(string playlistID, string videoId, string setVideoId);
         bool addSongToPlaylist(string playlistID, string videoId);
+        bool delPlaylist(string playlistID);
 
         bool likeSong(string videoId);
         bool unlikeSong(string videoId);

@@ -17,7 +17,7 @@ int main() {
         t.album,
         t.mins,
         t.secs,
-        t.id
+        t.videoId
         ) << "\n";
     }
     std::cout << "0. size: " << tmp.size() << '\n';

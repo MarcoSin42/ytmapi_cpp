@@ -67,7 +67,7 @@ void inline appendTracks(ytmapi::Tracks &output, simdjson::ondemand::array track
     constexpr int titleIdx  = 0;
     constexpr int artistIdx = 1;
     constexpr int albumIdx  = 2;
-    string title, artist, album, videoId, duration_str;
+    string title, artist, album, videoId, duration_str, setVideoId;
 
     for (simdjson::ondemand::value musicRespLstItemRenderer : trackItems) {
         simdjson::ondemand::object listItemRenderer = musicRespLstItemRenderer["musicResponsiveListItemRenderer"];
@@ -85,11 +85,18 @@ void inline appendTracks(ytmapi::Tracks &output, simdjson::ondemand::array track
         int mins = std::stoi(duration_str.substr(0, duration_str.find(":")));
         int secs = std::stoi(duration_str.substr(duration_str.find(":") + 1));
 
-        view = listItemRenderer["playlistItemData"]["videoId"];
+
+        simdjson::ondemand::object playlistItemData = listItemRenderer["playlistItemData"];
+
+        view = playlistItemData["playlistSetVideoId"];
+        setVideoId = string(view.begin(), view.end());
+
+        view = playlistItemData["videoId"];
         videoId = string(view.begin(), view.end());
 
         output.push_back(Track{
             videoId,
+            setVideoId,
             title,
             artist,
             album,
@@ -537,5 +544,19 @@ bool YTMusic::addSongToPlaylist(string playlistID, string videoId) {
 
     return false;
 }
+
+/*
+bool YTMusic::delSongFromPlaylist(string playlistID, string videoId) {
+    cpr::Response r = cpr::Post(
+        cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems"},
+        cpr::Bearer{m_oauthToken},
+        cpr::Header{
+            {"content-type",  "application/json"},
+        },
+        cpr::Parameters{
+            {"id", play}
+        }
+    )
+}*/
 
 }; // namespace ytmapi
