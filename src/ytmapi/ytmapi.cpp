@@ -14,6 +14,7 @@
 #include <cpr/cpr.h>
 #include "cpr/api.h"
 #include "cpr/bearer.h"
+#include "cpr/body.h"
 #include "cpr/cprtypes.h"
 #include "cpr/parameters.h"
 #include "cpr/response.h"
@@ -546,18 +547,28 @@ bool YTMusic::addSongToPlaylist(string playlistID, string videoId) {
     return false;
 }
 
-/*
-bool YTMusic::delSongFromPlaylist(string playlistID, string videoId) {
+
+bool YTMusic::delSongFromPlaylist(string playlistID, string videoId, string setVideoId) {
+    string body =
+    R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "actions": [{"setVideoId":")~"
+    +setVideoId + R"~(",)~"
+    +R"~("addedVideoId": ")~"
+    +videoId
+    +R"~(", "action": "ACTION_ADD_VIDEO", "dedupeOption": "DEDUPE_OPTION_CHECK"}], "playlistId": ")~"
+    +playlistID
+    +R"~("})~";
     cpr::Response r = cpr::Post(
-        cpr::Url{"https://youtube.googleapis.com/youtube/v3/playlistItems"},
+        cpr::Url{"https://music.youtube.com/youtubei/v1/browse/edit_playlist?prettyPrint=false"},
         cpr::Bearer{m_oauthToken},
         cpr::Header{
             {"content-type",  "application/json"},
         },
-        cpr::Parameters{
-            {"id", play}
-        }
-    )
-}*/
+        cpr::Body{body}
+    );
+    if (r.status_code == cpr::status::HTTP_OK)
+        return true;
+
+    return false;
+}
 
 }; // namespace ytmapi
