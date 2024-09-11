@@ -33,7 +33,8 @@ For a comprehensive list of features, you should consult the header file.
 - [ ] Retrieval of moods and genre playlists
 
 ### Library management
-- [ ] Get library contents: playlists, songs, artists, albums and subscriptions
+- [x] Get library contents: playlists, songs
+- [ ] artists, albums and subscriptions
 - [ ] add/remove library content: rate songs, albums and playlists, subscribe/unsubscribe artists
 - [ ] get and modify play history
 
