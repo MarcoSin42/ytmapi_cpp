@@ -45,7 +45,5 @@ For a comprehensive list of features, you should consult the header file.
 - [ ] edit Playlist metadata
 - [x] Get playlist contents
 - [ ] Get playlist suggestions
-
-### Localization features
-- [x] Only English is supported
+and subscriptions
 - [ ] Localization support

@@ -42,23 +42,23 @@ class YTMusic {
         
         std::chrono::seconds m_expires_at; // Unix epoch time
     public:
-        YTMusic(string oauth_path, string lang = "en");
+        YTMusic(const string& oauth_path, const string& lang = "en");
         YTMusic();
-        Tracks getPlaylistTracks(string playlistID);
+        Tracks getPlaylistTracks(const string& playlistID);
         Playlists getPlaylists();
 
         void requestOAuth();
         bool refreshOAuth();
 
-        bool createPlaylist(string title);
-        bool delSongFromPlaylist(string playlistID, string videoId, string setVideoId);
-        bool addSongToPlaylist(string playlistID, string videoId);
-        bool delPlaylist(string playlistID);
+        bool createPlaylist(const string& title);
+        bool delSongFromPlaylist(const string& playlistID, const string& videoId, const string& setVideoId);
+        bool addSongToPlaylist(const string& playlistID, const string& videoId);
+        bool delPlaylist(const string& playlistID);
 
-        bool likeSong(string videoId);
-        bool unlikeSong(string videoId);
-        bool dislikeSong(string videoId);
-        bool undislikeSong(string videoId);
+        bool likeSong(const string& videoId);
+        bool unlikeSong(const string& videoId);
+        bool dislikeSong(const string& videoId);
+        bool undislikeSong(const string& videoId);
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
 

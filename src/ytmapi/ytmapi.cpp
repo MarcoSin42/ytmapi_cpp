@@ -146,7 +146,7 @@ string extractJSONstr(string s) {
 }
 
 
-YTMusic::YTMusic(string oauth_path, string lang) {
+YTMusic::YTMusic(const string& oauth_path, const string& lang) {
     std::ifstream oauth_file;
 
     simdjson::ondemand::parser parser;
@@ -233,7 +233,7 @@ Playlists YTMusic::getPlaylists() {
     return output;
 }
 
-Tracks YTMusic::getPlaylistTracks(string playlistID) {
+Tracks YTMusic::getPlaylistTracks(const string& playlistID) {
     Tracks output;
 
     cpr::Response r = cpr::Get(
@@ -400,7 +400,7 @@ void YTMusic::requestOAuth() {
 }
 
 // Tell YT to create a new playlist.  Returns true upon success and false otherwise.
-bool YTMusic::createPlaylist(string title) {
+bool YTMusic::createPlaylist(const string& title) {
     // This is quite messy, but this would be even messier using std::format
     string body = 
     R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240827.03.00"}},"title":")~" 
@@ -428,7 +428,7 @@ bool YTMusic::createPlaylist(string title) {
 }
 
 // Delete a given playlist with given ID.  Returns true if successful and false otherwise.
-bool YTMusic::delPlaylist(string playlistID) {
+bool YTMusic::delPlaylist(const string& playlistID) {
     // This is quite messy, but this would be even messier using std::format
     string body = 
     R"~({"context":{"client":{"hl":"en","gl":"CA","userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36,gzip(gfe)","clientName":"WEB_REMIX","clientVersion":"1.20240827.03.00"}},)~"
@@ -456,7 +456,7 @@ bool YTMusic::delPlaylist(string playlistID) {
     return true;
 }
 
-bool YTMusic::likeSong(string videoId) {
+bool YTMusic::likeSong(const string& videoId) {
     string body =
     R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "target": {"videoId": ")~"
     +videoId
@@ -477,7 +477,7 @@ bool YTMusic::likeSong(string videoId) {
     return false;
 }
 
-bool YTMusic::unlikeSong(string videoId) {
+bool YTMusic::unlikeSong(const string& videoId) {
     string body =
     R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "target": {"videoId": ")~"
     +videoId
@@ -498,7 +498,7 @@ bool YTMusic::unlikeSong(string videoId) {
     return false;
 }
 
-bool YTMusic::dislikeSong(string videoId) {
+bool YTMusic::dislikeSong(const string& videoId) {
     string body =
     R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "target": {"videoId": ")~"
     +videoId
@@ -520,11 +520,11 @@ bool YTMusic::dislikeSong(string videoId) {
 }
 
 // I know, seems redundant.
-bool YTMusic::undislikeSong(string videoId) {
+bool YTMusic::undislikeSong(const string& videoId) {
     return unlikeSong(videoId);
 }
 
-bool YTMusic::addSongToPlaylist(string playlistID, string videoId) {
+bool YTMusic::addSongToPlaylist(const string& playlistID, const string& videoId) {
     string body =
     R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "actions": [{"addedVideoId": ")~"
     +videoId
@@ -548,7 +548,7 @@ bool YTMusic::addSongToPlaylist(string playlistID, string videoId) {
 }
 
 
-bool YTMusic::delSongFromPlaylist(string playlistID, string videoId, string setVideoId) {
+bool YTMusic::delSongFromPlaylist(const string& playlistID, const string& videoId, const string& setVideoId) {
     string body =
     R"~({"context": {"client": {"clientName": "WEB_REMIX", "clientVersion": "1.20240904.01.01"}}, "actions": [{"setVideoId":")~"
     +setVideoId + R"~(",)~"
