@@ -261,8 +261,9 @@ Tracks YTMusic::getPlaylistTracks(string playlistID) {
     simdjson::ondemand::value playlistShelfRenderer = 
         sectionListRenderer.at_path(".contents[0].musicPlaylistShelfRenderer");
 
-    int itemCount = playlistShelfRenderer["collapsedItemCount"].get_int64();
-    output.reserve(itemCount);
+    int itemCount = playlistShelfRenderer["collapsedItemCount"].get_int64() == 100;
+    int allocAmount = itemCount == 100 ? 150 : itemCount; // If we have exactly 100, then it's likely that the playlist is probably larger
+    output.reserve(allocAmount);
     simdjson::ondemand::array trackItems = playlistShelfRenderer["contents"].get_array();
 
     string contToken = getContinuationToken(playlistShelfRenderer);
