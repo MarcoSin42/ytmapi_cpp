@@ -113,7 +113,7 @@ void inline appendTracks(ytmapi::Tracks &output, simdjson::ondemand::array track
 
 namespace ytmapi {
 
-inline bool YTMusic::isValidOauth() {
+bool YTMusic::isValidOauth() {
     using namespace std::chrono;
     auto currentEpoch_ms = system_clock::now();
     if (std::chrono::duration_cast<seconds>(currentEpoch_ms.time_since_epoch()) < m_expires_at)
@@ -179,11 +179,13 @@ YTMusic::YTMusic(const string& oauth_path, const string& lang) {
         throw std::runtime_error("The OAUTH JSON file is incorrectly formatted");
     }
 
+    m_channelId = getUserChannelId();
     m_language = lang;
 }
 
 YTMusic::YTMusic() {
     requestOAuth();
+    m_channelId = getUserChannelId();
 }
 
 
@@ -569,6 +571,33 @@ bool YTMusic::delSongFromPlaylist(const string& playlistID, const string& videoI
         return true;
 
     return false;
+}
+
+string YTMusic::getUserChannelId() {
+    cpr::Response r = cpr::Get(
+        cpr::Url{"https://youtube.googleapis.com/youtube/v3/channels"},
+        cpr::Bearer{m_oauthToken},
+        cpr::Header{
+            {"content-type",  "application/json"},
+        },
+        cpr::Parameters{
+            {"part","id"},
+            {"mine", "true"}
+        }
+    );
+
+    simdjson::ondemand::parser parser;
+    simdjson::padded_string pad_string = simdjson::padded_string(r.text);
+    simdjson::ondemand::document doc = parser.iterate(pad_string);
+
+    std::string_view view;
+    view = doc.at_path(".items[0].id");
+
+    return string(view.begin(), view.end());
+}
+
+string YTMusic::getChanId() {
+    return m_channelId;
 }
 
 }; // namespace ytmapi

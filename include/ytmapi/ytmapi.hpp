@@ -39,6 +39,7 @@ class YTMusic {
         string m_refreshToken;
         string m_language;
         string m_location;
+        string m_channelId;
         
         std::chrono::seconds m_expires_at; // Unix epoch time
     public:
@@ -46,6 +47,7 @@ class YTMusic {
         YTMusic();
         Tracks getPlaylistTracks(const string& playlistID);
         Playlists getPlaylists();
+        string getChanId();
 
         void requestOAuth();
         bool refreshOAuth();
@@ -62,7 +64,9 @@ class YTMusic {
     private:
         cpr::AsyncResponse contPlaylist(const string & ctoken);
 
-        inline bool isValidOauth();
+        string getUserChannelId();
+
+        bool isValidOauth();
 };
 };
 #endif
